@@ -5,6 +5,11 @@ import java.util.*;
 
 public class Jirc {
 
+		Socket soc;
+		PrintWriter out; // write to server
+		BufferedReader in; // read from server
+		BufferedReader stdin; // read from cli
+
 	  	// codes based on IRC specification
 	  	static final String JOIN = "JOIN";
 	  	static final String QUIT = "QUIT";
@@ -17,15 +22,7 @@ public class Jirc {
 	  	static final String MOTDEND = "376";
 
 	public Jirc() {
-	  	/*
-	  	if (args.length < 2) {
-			System.err.println("Missing arguments.");
-			System.exit(1);
-		}
-		*/
 
-//		String hostname = args[0];
-//		int portNumber = Integer.parseInt(args[1]);
 		String hostname = "chat.freenode.net";
 		int portNumber = 6667;
 		String nick = "irctest";
@@ -37,19 +34,13 @@ public class Jirc {
 		mutelist.add(NAMEREQ); // names list request
 		mutelist.add(NAMELIST); // names list
 		mutelist.add(NAMEEND); // end names list
-
 		mutelist.add(MOTDREQ); // motd request
 //		mutelist.add(MOTD); // motd reply
 		mutelist.add(MOTDEND); // motd end
-
 //		mutelist.add(QUIT); // quit messages
 //		mutelist.add(JOIN); // join messages
 		// end muting codes
 
-		Socket soc;
-		PrintWriter out;
-		BufferedReader in;
-		BufferedReader stdin;
 
 		System.out.println("|| Connecting to "+hostname+":"+portNumber);
 		try {
@@ -97,14 +88,6 @@ public class Jirc {
 				if (resp.length > 2) {
 					msg = resp[2];
 				}
-
-				/*
-				if (origin.equals("PING")) {
-				  	String pong = receive.replaceFirst("I","O");
-					out.println(pong);
-					System.out.println(pong);
-				}
-				*/
 
 				if (!mutelist.contains(code)) { // only show what we want
 
@@ -169,6 +152,13 @@ public class Jirc {
 			System.exit(1);
 		}
 	}
+
+	/*
+	public void start() {
+		stdin = new BufferedReader(InputStreamReader(System.in));
+		out = new PrintWriter(soc.getOutputStream(), true);
+	}
+	*/
 
 	public void send(PrintWriter out, String message) {
 		out.println(message);
