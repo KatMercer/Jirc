@@ -18,7 +18,7 @@ public class ChatPane extends JPanel {
 	JTextArea chat;
 	JTextField t_input;
 
-	public ChatPane(Connection connection) {//might be able to pass in Jirc
+	public ChatPane(Connection connection) {
 	  	this.connection = connection;
 		this.connection.connect();
 
@@ -79,9 +79,9 @@ public class ChatPane extends JPanel {
 
 	public void msgIn(String msg) {
 	  	String[] msgparsed = Connection.parseMessage(msg);
-		chat.append("\n");
+		chat.append("\n"+Connection.getDateTime());
 		for (String s : msgparsed) {
-			chat.append(s+" ");
+			chat.append(" "+s);
 		}
 		chat.setCaretPosition(chat.getDocument().getLength());
 	}

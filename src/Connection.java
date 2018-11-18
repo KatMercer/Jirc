@@ -2,6 +2,7 @@ import java.net.Socket;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.time.ZonedDateTime;
 
 public class Connection {
 	public String host;
@@ -125,6 +126,22 @@ public class Connection {
 			msg[2] = temp[1]; // parameters
 		}
 		return msg;
+	}
+
+	public static String getTime() {
+	  	String dt = ZonedDateTime.now().toString();
+		String time = dt.substring(dt.indexOf("T")+1, dt.indexOf("."));
+		return time;
+	}
+
+	public static String getDate() {
+		String dt = ZonedDateTime.now().toString();
+		String date = dt.substring(0, dt.indexOf("T"));
+		return date;
+	}
+
+	public static String getDateTime() {
+		return getDate()+" "+getTime();
 	}
 
 	public static void main(String[] args) {
