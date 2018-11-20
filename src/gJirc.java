@@ -18,7 +18,7 @@ public class gJirc extends JFrame {
 	  	this.host = "chat.freenode.net";//DEBUG
 		this.port = 6667;//DEBUG
 	  	this.nick = "irctest";//DEBUG
-		this.realname = "Kat";//DEBUG
+		this.realname = "jirc";//DEBUG
 
 		this.setTitle("JIRC");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,15 +35,15 @@ public class gJirc extends JFrame {
 		this.setMinimumSize(new Dimension(100,100));
 //		this.pack();
 		this.setVisible(true);
+
+		chatpane.t_input.requestFocus();
 	}
 
 	public void run() {
-	  	//connection.connect();
 		String in;
 		try {
 		  	while ((in = connection.rec.readLine()) != null) {
 				chatpane.msgIn(in);
-//				System.out.println(in);//DEBUG
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -51,7 +51,6 @@ public class gJirc extends JFrame {
 	}
 
   	public static void main(String[] args) {
-		//System.out.println("sorry, nothing.");//DEBUG
 		gJirc app = new gJirc();
 		app.run();
 	}
