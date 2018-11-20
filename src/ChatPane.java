@@ -4,7 +4,9 @@ import java.awt.event.*;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -25,7 +27,8 @@ public class ChatPane extends JPanel {
 	/** Font family to use */
 	static String fontfam = "Monospace";
 	/** Font size for all text */
-	static int fontsize = 16;
+	static int fontsize = 12;
+	boolean linecolored = false;
 
 	/** Pane containing all the chat messages */
 	JEditorPane chat;
@@ -33,6 +36,8 @@ public class ChatPane extends JPanel {
 	SimpleAttributeSet attrib;
 	/** Input text box */
 	JTextField t_input;
+	/** Nick display */
+	JLabel l_nick;
 
 	/**
 	 * Constructor for a ChatPane communicating over a Connection
@@ -69,6 +74,7 @@ public class ChatPane extends JPanel {
 		JScrollPane chatscroll = new JScrollPane(chat);
 		con.gridx = 0;
 		con.gridy = 0;
+		con.gridwidth = 2;
 		con.weightx = 1;
 		con.weighty = 1;
 		this.add(chatscroll, con);
@@ -85,11 +91,24 @@ public class ChatPane extends JPanel {
 				t_input.setText("");
 			 }
 			 });
-		con.gridx = 0;
+		con.gridx = 1;
 		con.gridy = 1;
+		con.gridwidth = 1;
 		con.weightx = 0;
 		con.weighty = 0;
 		this.add(t_input, con);
+
+		/* Nick display */
+		l_nick = new JLabel(connection.nick);
+		l_nick.setBackground(bgcolor);
+		l_nick.setForeground(fgcolor);
+		l_nick.setFont(new Font(fontfam, Font.PLAIN, fontsize));
+		con.gridx = 0;
+		con.gridy = 1;
+		con.insets = new Insets(0, fontsize/2, 0, fontsize/2);
+		con.weightx = 0;
+		con.weighty = 0;
+		this.add(l_nick, con);
 	}
 
 	/**
@@ -118,29 +137,31 @@ public class ChatPane extends JPanel {
 		int startat = 0;
 		if (msgparsed[0].equals(Connection.CMD_PING)) { // PING message we need to respond to
 			connection.keepalive(msg);
-		} else if (msgparsed[1].equals(Connection.CMD_PRIVMSG)) { // message in the channel
-			String u = extractUser(msgparsed[0]); // extract user nick
-			if (u != null) {
-				incoming += u; // user nick
-				msgparsed[2] = "\u2502"; // separator
+		} else {
+		  	if (msgparsed[1].equals(Connection.CMD_PRIVMSG)) { // message in the channel
+				String u = extractUser(msgparsed[0]); // extract user nick
+				if (u != null) {
+					incoming += u; // user nick
+					msgparsed[2] = "\u2502"; // separator
+				}
+				msgparsed[3] = msgparsed[3].substring(1);
+				startat = 2;
+			} else if (msgparsed[1].equals(Connection.CMD_QUIT)) { // a user has quit
+				incoming += extractUser(msgparsed[0])+" has quit ("+msgparsed[msgparsed.length-1].substring(1)+")";
+				startat = 100;
+			} else if (msgparsed[1].equals(Connection.CMD_PART)) { // a user has left
+			  	incoming += extractUser(msgparsed[0])+" left ("+msgparsed[msgparsed.length-1].substring(1)+")";
+			} else if (msgparsed[1].equals(Connection.CMD_JOIN)) { // a user has joined
+				incoming += extractUser(msgparsed[0])+" joined";
+				startat = 100;
 			}
-			msgparsed[3] = msgparsed[3].substring(1);
-			startat = 2;
-		} else if (msgparsed[1].equals(Connection.CMD_QUIT)) { // a user has quit
-			incoming += extractUser(msgparsed[0])+" has quit ("+msgparsed[msgparsed.length-1].substring(1)+")";
-			startat = 100;
-		} else if (msgparsed[1].equals(Connection.CMD_PART)) { // a user has left
-		  	incoming += extractUser(msgparsed[0])+" left ("+msgparsed[msgparsed.length-1].substring(1)+")";
-		} else if (msgparsed[1].equals(Connection.CMD_JOIN)) { // a user has joined
-			incoming += extractUser(msgparsed[0])+" joined";
-			startat = 100;
-		}
-		for (int i = startat; i < msgparsed.length; i++) { // consolidate the constituent parts of the message
-		  	if (msgparsed[i] != "" || msgparsed[i] != null) {
-				incoming += " "+msgparsed[i];
+			for (int i = startat; i < msgparsed.length; i++) { // consolidate the constituent parts of the message
+			  	if (msgparsed[i] != "" || msgparsed[i] != null) {
+					incoming += " "+msgparsed[i];
+				}
 			}
+			append(incoming); // show message
 		}
-		append(incoming); // show message
 	}
 
 	/**
@@ -165,9 +186,37 @@ public class ChatPane extends JPanel {
 	 **/
 	public void append(String msg) {
 	  	Document doc = chat.getDocument();
+		linecolored = !linecolored;
+		Color col = new Color(255,255,255);
+		/*
+		if (linecolored) {
+			col = bgcolor;
+		} else {
+		  	int r = bgcolor.getRed();
+			int g = bgcolor.getGreen();
+			int b = bgcolor.getBlue();
+			col = new Color(r+10,g+10,b+10);
+		}
+		*/
+		StyleContext style = StyleContext.getDefaultStyleContext();
+		style.addAttribute(attrib, StyleConstants.Background, col);
 		try {
+			if (linecolored) {
+		  		int r = bgcolor.getRed();
+				int g = bgcolor.getGreen();
+				int b = bgcolor.getBlue();
+				int uo = 20;
+				col = new Color(r+uo,g+uo,b+uo);
+			} else {
+			  	col = bgcolor;
+			}
+			StyleConstants.setBackground(attrib, col);
+
+			((StyledDocument)doc).setCharacterAttributes(doc.getText(0,doc.getLength()).lastIndexOf("\n"), doc.getLength(), attrib, false);
 		  	doc.insertString(doc.getLength(),"\n"+Connection.getTime()+" \u2502 ",null);
 			doc.insertString(doc.getLength(),msg,null);
+			//TODO
+			//chat.getDocument().setParagraphAttributes(0, doc.getLength(), attrib, false);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}

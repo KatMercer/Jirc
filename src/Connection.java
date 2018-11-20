@@ -199,7 +199,7 @@ public class Connection {
 	}
 
 	/**
-	 * Gets the current time as reporte by the client system
+	 * Gets the current time as reported by the client system
 	 * @return the current time
 	 **/
 	public static String getTime() {
