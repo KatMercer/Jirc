@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JButton;
+import net.*;
+import gfx.*;
 
 public class gJirc extends JFrame {
 

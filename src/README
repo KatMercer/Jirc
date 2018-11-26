@@ -1,9 +1,0 @@
-#JIRC
-##Purpose
-Lightweight IRC chat client with no features but bare-bones communication hard coded to freenode
-
-##Compiling
-Run make
-
-##Running
-Run java gJirc

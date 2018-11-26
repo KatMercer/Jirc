@@ -1,3 +1,5 @@
+package net;
+
 import java.net.Socket;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
@@ -20,11 +22,11 @@ public class Connection {
 	public String channel;
 
 	/** Socket connection to the server */
-	Socket soc;
+	public Socket soc;
 	/** Writer to send messages to the server */
-	PrintWriter out;
+	public PrintWriter out;
 	/** Reader to read messages received from the server */
-	BufferedReader rec;
+	public BufferedReader rec;
 
 	/* User modes */
 	public static String MODE_NONE = "0";
@@ -45,11 +47,15 @@ public class Connection {
 	public static final String CMD_PING = "PING";
 
 	/* Reply codes */
+	public static final String RPL_WELCOME = "001";
+	public static final String RPL_YOURHOST = "002";
+	public static final String RPL_CREATED = "003";
+	public static final String RPL_MYINFO = "004";
 	public static final String RPL_BOUNCE = "005";
 	public static final String RPL_AWAY = "301";
 	public static final String RPL_NOTOPIC = "331";
 	public static final String RPL_TOPIC = "332";
-	public static final String RPL_NAMREPLY = "353";
+	public static final String RPL_NAMEREPLY = "353";
 	public static final String RPL_ENDOFNAMES = "366";
 	public static final String RPL_MOTDSTART = "375";
 	public static final String RPL_MOTD = "372";
